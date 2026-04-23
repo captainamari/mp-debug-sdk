@@ -1,0 +1,73 @@
+<view class="mp-debug-storage" wx:if="{{visible}}">
+
+  <!-- 列表视图 -->
+  <view wx:if="{{!showDetail}}" class="mp-debug-storage-main">
+    <!-- 顶部信息栏 -->
+    <view class="mp-debug-storage-toolbar">
+      <text class="mp-debug-storage-info" wx:if="{{storageInfo}}">
+        {{storageInfo.count}} keys · {{storageInfo.currentSize}}KB / {{storageInfo.limitSize}}KB ({{storageInfo.usagePercent}}%)
+      </text>
+      <view class="mp-debug-storage-toolbar-spacer"></view>
+      <view class="mp-debug-storage-refresh" catchtap="refresh">
+        <text>🔄</text>
+      </view>
+    </view>
+
+    <!-- Storage 列表 -->
+    <scroll-view class="mp-debug-storage-list" scroll-y enhanced show-scrollbar="{{false}}">
+      <view
+        wx:for="{{items}}"
+        wx:key="key"
+        class="mp-debug-storage-item"
+        data-index="{{index}}"
+        catchtap="onSelectItem"
+      >
+        <view class="mp-debug-storage-item-row">
+          <text class="mp-debug-storage-item-key">{{item.key}}</text>
+          <text class="mp-debug-storage-item-type">[{{item.valueType}}]</text>
+        </view>
+        <text class="mp-debug-storage-item-preview">{{item.valueStr}}</text>
+      </view>
+
+      <view wx:if="{{items.length === 0}}" class="mp-debug-storage-empty">
+        <text class="mp-debug-storage-empty-text">No storage data</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 详情视图 -->
+  <view wx:if="{{showDetail && selectedItem}}" class="mp-debug-storage-detail">
+    <view class="mp-debug-storage-detail-header">
+      <view class="mp-debug-storage-detail-back" catchtap="onCloseDetail">
+        <text>← Back</text>
+      </view>
+      <view class="mp-debug-storage-detail-actions">
+        <view class="mp-debug-storage-detail-btn" catchtap="onCopyValue">
+          <text>Copy</text>
+        </view>
+        <view class="mp-debug-storage-detail-btn mp-debug-storage-detail-btn-danger" catchtap="onRemoveItem" data-key="{{selectedItem.key}}">
+          <text>Delete</text>
+        </view>
+      </view>
+    </view>
+
+    <scroll-view class="mp-debug-storage-detail-content" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="mp-debug-storage-detail-kv">
+        <text class="mp-debug-storage-detail-label">Key</text>
+        <text class="mp-debug-storage-detail-value" user-select>{{selectedItem.key}}</text>
+      </view>
+      <view class="mp-debug-storage-detail-kv">
+        <text class="mp-debug-storage-detail-label">Type</text>
+        <text class="mp-debug-storage-detail-value">{{selectedItem.valueType}}</text>
+      </view>
+      <view class="mp-debug-storage-detail-kv">
+        <text class="mp-debug-storage-detail-label">Size</text>
+        <text class="mp-debug-storage-detail-value">{{selectedItem.size}} chars</text>
+      </view>
+      <view class="mp-debug-storage-detail-data">
+        <text class="mp-debug-storage-detail-label">Value</text>
+        <text class="mp-debug-storage-code-block" user-select>{{selectedItem.valueStr}}</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

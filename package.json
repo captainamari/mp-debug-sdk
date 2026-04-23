@@ -1,0 +1,30 @@
+{
+  "name": "mp-debug-sdk",
+  "version": "1.0.0",
+  "description": "微信小程序调试控制台 SDK - 类似 vConsole 的小程序调试面板",
+  "main": "src/core/index.js",
+  "scripts": {
+    "build": "gulp build",
+    "build:clean": "gulp clean && gulp build",
+    "watch": "gulp watch"
+  },
+  "keywords": [
+    "miniprogram",
+    "wechat",
+    "debug",
+    "console",
+    "vconsole",
+    "devtools",
+    "network"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "del": "^6.1.1",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-terser": "^2.1.0",
+    "through2": "^4.0.2"
+  }
+}

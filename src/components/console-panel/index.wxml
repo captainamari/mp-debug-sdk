@@ -1,0 +1,73 @@
+<!-- Console 面板 - 使用 WXS 进行列表过滤 -->
+<wxs module="filters">
+  module.exports.filterLogs = function(logs, filterType) {
+    if (filterType === 'all') return logs;
+    var result = [];
+    for (var i = 0; i < logs.length; i++) {
+      if (logs[i].type === filterType) {
+        result.push(logs[i]);
+      }
+    }
+    return result;
+  }
+</wxs>
+
+<view class="mp-debug-console" wx:if="{{visible}}">
+  <!-- 过滤栏 -->
+  <view class="mp-debug-console-filter">
+    <view
+      wx:for="{{filterTypes}}"
+      wx:key="key"
+      class="mp-debug-console-filter-item {{filterType === item.key ? 'active' : ''}}"
+      data-type="{{item.key}}"
+      catchtap="onFilterChange"
+    >
+      <text>{{item.label}}</text>
+    </view>
+    <view class="mp-debug-console-filter-spacer"></view>
+    <view class="mp-debug-console-clear" catchtap="onClear">
+      <text class="mp-debug-console-clear-icon">🗑</text>
+    </view>
+  </view>
+
+  <!-- 日志列表 -->
+  <scroll-view
+    class="mp-debug-console-list"
+    scroll-y
+    scroll-into-view="{{scrollToView}}"
+    scroll-with-animation
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <view
+      wx:for="{{filters.filterLogs(logs, filterType)}}"
+      wx:key="id"
+      id="log-{{item.id}}"
+      class="mp-debug-console-item mp-debug-console-{{item.type}}"
+      data-index="{{index}}"
+      catchtap="onToggleExpand"
+    >
+      <view class="mp-debug-console-item-header">
+        <text class="mp-debug-console-item-type">{{item.type === 'error' ? '✕' : item.type === 'warn' ? '⚠' : item.type === 'info' ? 'ℹ' : '›'}}</text>
+        <text class="mp-debug-console-item-time">{{item.timeStr}}</text>
+        <text class="mp-debug-console-item-content" user-select>{{item.content}}</text>
+      </view>
+
+      <!-- 展开详情 -->
+      <view wx:if="{{item.expanded}}" class="mp-debug-console-item-detail">
+        <view wx:for="{{item.rawData}}" wx:for-item="arg" wx:key="*this" class="mp-debug-console-detail-block">
+          <text class="mp-debug-console-detail-type">[{{arg.type}}]</text>
+          <text class="mp-debug-console-detail-value" user-select>{{arg.value}}</text>
+        </view>
+        <view class="mp-debug-console-item-actions">
+          <text class="mp-debug-console-action-btn" catchtap="onCopyLog" data-index="{{index}}">Copy</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{logs.length === 0}}" class="mp-debug-console-empty">
+      <text class="mp-debug-console-empty-text">No logs yet</text>
+    </view>
+  </scroll-view>
+</view>
