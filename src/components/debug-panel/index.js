@@ -37,11 +37,32 @@ Component({
   lifetimes: {
     attached() {
       // 检查 SDK 是否启用
-      if (!MpDebug.isEnabled()) {
+      if (MpDebug.isEnabled()) {
+        this._activate();
+      } else {
         this.setData({ enabled: false });
-        return;
+        // 监听远程配置异步加载后可能启用 SDK
+        this._onSdkReady = () => {
+          if (MpDebug.isEnabled()) {
+            this._activate();
+          }
+        };
+        eventBus.on('sdk:ready', this._onSdkReady);
       }
+    },
 
+    detached() {
+      if (this._onConsoleAdd) eventBus.off('console:add', this._onConsoleAdd);
+      if (this._onNetworkRequest) eventBus.off('network:request', this._onNetworkRequest);
+      if (this._onSdkReady) eventBus.off('sdk:ready', this._onSdkReady);
+    }
+  },
+
+  methods: {
+    /**
+     * 激活面板（SDK 启用后调用）
+     */
+    _activate() {
       this.setData({ enabled: true });
 
       // 计算面板高度
@@ -72,13 +93,6 @@ Component({
       eventBus.on('network:request', this._onNetworkRequest);
     },
 
-    detached() {
-      if (this._onConsoleAdd) eventBus.off('console:add', this._onConsoleAdd);
-      if (this._onNetworkRequest) eventBus.off('network:request', this._onNetworkRequest);
-    }
-  },
-
-  methods: {
     /**
      * 切换面板显示/隐藏
      */
