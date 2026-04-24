@@ -27,7 +27,7 @@ const remoteLogger = require('./remote-logger');
 // SDK 配置
 let _config = {
   env: '',              // 环境标识: 'development' | 'production' | 自定义
-  enabled: false,       // 是否启用
+  enabled: undefined,   // 是否启用（undefined 表示未设置，将根据 env 判断）
   maxLogCount: 500,     // 最大日志条数
   maxRequestCount: 200, // 最大请求记录条数
   showButton: true,     // 是否显示悬浮按钮
