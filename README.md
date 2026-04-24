@@ -740,6 +740,38 @@ const MpDebug = require('./lib/mp-debug-sdk/core/index');
 | `getVersion()` | - | `string` | 获取 SDK 版本号 |
 | `isRemoteConfigLoaded()` | - | `boolean` | 远程配置是否已加载完成 |
 
+#### destroy() 使用说明
+
+`destroy()` 用于**完全销毁 SDK**，恢复所有被劫持的原生 API（console、wx.request、App、Page），清理事件监听和定时器，并上报远程日志缓冲队列中剩余的数据。
+
+**使用场景：**
+- 小程序退出或需要彻底关闭调试功能时
+- 在 `App.onHide` 或页面 `onUnload` 中清理 SDK 资源
+- 动态切换调试状态（先 destroy 再重新 init）
+
+```javascript
+// 场景 1：在 App 退出时销毁
+App({
+  onHide() {
+    // 小程序切到后台时销毁 SDK（可选）
+    MpDebug.destroy();
+  }
+});
+
+// 场景 2：手动关闭调试
+function disableDebug() {
+  MpDebug.destroy();
+  // destroy 后 SDK 将：
+  // - 恢复 console.log/info/warn/error 为原始方法
+  // - 恢复 wx.request 为原始方法
+  // - 清理 EventBus 所有事件监听
+  // - 停止远程日志上报定时器，并上报剩余缓冲数据
+  // - 恢复 Page 构造函数
+}
+```
+
+> ⚠️ **注意**：`destroy()` 后需要重新调用 `init()` 才能再次使用 SDK。由于 `App()` 只会执行一次，`destroy` 后 `errorHandler`（全局错误捕获）将不再对新的错误生效。
+
 ### MpDebug.console
 
 ```javascript
